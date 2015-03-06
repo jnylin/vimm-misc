@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <title>Bevaka nya E-böcker</title>
+    <style type="text/css">
+     body {
+       font-size: 100%;
+     }
+     section {
+       width: 28.125em;
+       margin-right: 3.125em;
+       max-width: 100%;
+       float: left;
+     }
+     textarea {
+       width: 100%;
+     }
+    </style>
+  </head>
+  <body>
+    <h1>Bevaka nya E-böcker</h1>
+    <p>För att möjligöra manuellt urval av e-böcker utifrån via Elib.</p>
+	<p>Elibs administrativa gränssnitt genererar en Excel-fil. Bearbeta den enligt formen Efternamn, Förnamn, Titel och klistra in.</p>
+    <p>Kräver att webbläsaren stödjer <em>File API</em>. <a href="http://caniuse.com/#feat=fileapi" title="Översikt över vilka webbläsare som stödjer File API">Can I use File API?</a></p>
+    <section>
+      <h2>1. Klistra in nya titlar från Elibs utbud</h2>
+	  <p>OBS! Titlarna ska vara skriva enligt följande:<br /><em>Efternamn, Förnamn, Titel</em></p>
+      <form>
+	<textarea id="txtArea" name="src" rows="25">Kopiera in avsnittet med nya titlar från nyhetsbrevet.</textarea>
+      </form>
+    </section>
+    <section>
+      <h2>2. Läs in  en txt-fil med bevakade titlar</h2>
+      <!-- 
+      Txt-filen ska innehålla en titel på varje rad
+      och vara formaterade enligt följande mönster: 
+      Leandoer, Kristoffer, September
+      -->
+      <p>Välj fil där bevakade titlar finns listade.</p>
+      <input type="file" id="file" name="monitoredTitles" />
+      <output id="output"></output>
+    </section>
+    <section>
+      <h2>3. Resultat</h2>
+      <ul id="resultList"></ul>
+    </section>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="js/moxie.js"></script>
+    <script>
+     /**
+      *
+      * @licstart  The following is the entire license notice for the 
+      *  JavaScript code in this page.
+      *
+      * Copyright (C) 2014  Jakob Nylin Nilsson
+      * Copyright (C) 2014  Vimmerby kommun
+      *
+      *
+      * The JavaScript code in this page is free software: you can
+      * redistribute it and/or modify it under the terms of the GNU
+      * General Public License (GNU GPL) as published by the Free Software
+      * Foundation, either version 3 of the License, or (at your option)
+      * any later version.  The code is distributed WITHOUT ANY WARRANTY;
+      * without even the implied warranty of MERCHANTABILITY or FITNESS
+      * FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+      *
+      * As additional permission under GNU GPL version 3 section 7, you
+      * may distribute non-source (e.g., minimized or compacted) forms of
+      * that code without the copy of the GNU GPL normally required by
+      * section 4, provided you include this license notice and a URL
+      * through which recipients can access the Corresponding Source.
+      *
+      * @licend  The above is the entire license notice
+      * for the JavaScript code in this page.
+      *
+      */
+    </script>
+    <script>
+    var comparison = {
+		monitor:"",
+		newsletter:"",
+		arrNewsletter:[],
+		getResult:function() {
+			// Ger en array med titlar att lägga in
+			var arrResult = [],
+			arrMonitor = this.monitor.split("\n");
+			
+			for (var i=0; i<arrMonitor.length; i++) {
+			
+				var lastName = arrMonitor[i].split(", ")[0],
+					firstName = arrMonitor[i].split(", ")[1],
+					title = arrMonitor[i].split(", ")[2],
+					query = "";
+				
+				// Sätt ihop sökfrågan	
+				if ( lastName && firstName ) {
+					query += lastName+", "+firstName+", ";
+				}
+				query += title;
+				
+				if ( this.newsletter.search(query) > -1 ) {
+					arrResult.push(arrMonitor[i]);
+				}
+				
+			}
+	 
+			return arrResult;
+		}
+	};
+     
+	function handleFileSelect(e) {
+		var f = e.target.files[0],
+		reader = new FileReader();
+
+		if (f.type === "text/plain") {
+
+			reader.onload = (function(theFile) {
+				return function(e) {
+
+					var result;
+
+					// comparison.newsletter är redan definierad
+					comparison.monitor = e.target.result.replace(/\r\n/g, '\n');
+					result = comparison.getResult();
+	     
+					$('#resultList').html(''); // nollställ innan resultatet skrivs ut
+					
+					// Om sista raden är tom blir det fel
+					// Testa det på något sätt?
+					for (var i=0; i<result.length; i++) {
+						$('#resultList').append('<li>'+result[i]+'</li>');
+					}
+	     
+				};
+			})(f);
+
+			reader.readAsText(f);
+
+		}
+		else {
+				alert('Det måste vara en txt-fil');
+			}
+		}
+     
+	// Main
+	$(function () {
+		var defValue = $('textarea[name="src"]').val();
+       
+		$('textarea[name="src"]').focus(function() {
+		if (this.value == defValue) {
+			this.value = "";
+		}
+	});
+       
+	$('textarea[name="src"]').blur(function() {
+		if (this.value === "") {
+			this.value = defValue;
+		}			
+	});
+       
+	$('textarea[name="src"]').change(function() {
+		$('form').submit();
+	});
+       
+	$('form').submit(function() {
+		comparison.newsletter = $('textarea[name="src"]').val();
+		comparison.arrNewsletter = $('textarea[name="src"]').val().split('\n');
+	
+		return false;
+	});
+       
+		//$('#file').change(handleFileSelect);
+       
+	}());
+    </script>
+	<script>
+	// mOxie
+	var fileInput = new mOxie.FileInput({
+		browse_button: 'file'
+	});
+
+	function handleMoxieSelect(e) {
+		var f = e.target.files[0];
+
+		console.info(f);
+
+		readMoxieFile(f, function(e) {
+				console.info(e.target.result);
+		});
+
+	};
+
+	function readMoxieFile(file, onLoadCallback) {
+		var reader = new mOxie.FileReader();
+		reader.onload = onLoadCallback;
+		reader.readAsText(file);
+	};
+
+	fileInput.onchange = handleMoxieSelect;
+
+	fileInput.init();
+	</script>
+  </body>
+</html>

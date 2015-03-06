@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Omvandla Elibs nyhetsbrev till en BOOK-IT-sökning</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script>
+    /*    
+    @licstart  The following is the entire license notice for the 
+    JavaScript code in this page.
+
+    Copyright (C) 2014  Jakob Nylin Nilsson jakob<dot>nylin<at>gmail<dot>com
+	Copyright (C) 2014  Vimmerby kommun Biblioteket biblioteket<at>vimmerby.se
+
+    The JavaScript code in this page is free software: you can
+    redistribute it and/or modify it under the terms of the GNU
+    General Public License (GNU GPL) as published by the Free Software
+    Foundation, either version 3 of the License, or (at your option)
+    any later version.  The code is distributed WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+	As additional permission under GNU GPL version 3 section 7, you
+    may distribute non-source (e.g., minimized or compacted) forms of
+    that code without the copy of the GNU GPL normally required by
+    section 4, provided you include this license notice and a URL
+    through which recipients can access the Corresponding Source.   
+
+
+    @licend  The above is the entire license notice
+    for the JavaScript code in this page.
+    */
+    </script>		
+  </head>
+  <body>
+    <h1>Omvandla "borttagna titlar" från Elibs nyhetsbrev till en BOOK-IT-sökning</h1>
+    <ol>
+      <li><em>MÃ¤ngd katalogposter</em>. Gallra katalogposterna.</li> 
+    </ol>
+    <form>
+      <textarea rows="25" cols="60" name="src" id="txtArea">Kopiera in det som står under Borttagna titlar i nyhetsbrevet och omvandla.</textarea><br />
+      <button type="submit">Omvandla</button>
+    </form>
+    <script type="text/javascript">
+	function grep(pattern, input) {
+		"use strict";
+	   
+		var arrRet, i;
+		arrRet = [];
+       
+		i = 0;
+		for (var j in input) {
+			if (input[j].search(pattern) !== -1) {
+				arrRet[i] = input[j];
+				i++;
+			}
+		}
+       
+		return arrRet;
+	}
+     
+    (function() {
+		"use strict";
+       
+		var defaultValue, pattern, txtSrc, arrSrc, arrIsbn, isbnLast, query;
+		pattern = /^978\d{9,10}(X)?$/; /* Möjlig felkälla: om det står ett ISBN inne i den beskrivande texten,
+					 d.v.s. inte i slutet av den beskrivande meningen. 
+					 Har dock inte sett något exempel på det. */
+		arrSrc = [];
+		arrIsbn = [];
+       
+		$(function() {
+			defaultValue = $('textarea[name="src"]').val();
+	 
+			$('textarea[name="src"]').focus(function() {
+				if (this.value == defaultValue) {
+					this.value = "";
+				}
+			});
+			$('textarea[name="src"]').blur(function() {
+				if (this.value === "") {
+					this.value = defaultValue;
+				}			
+			});
+	 
+			$('form').submit(function() {
+				query = "dr/mt (";
+				txtSrc = $('textarea[name="src"]').val();
+				txtSrc = txtSrc.replace(/,/g, "");
+				arrSrc = txtSrc.split(/[;)\s:]+/);
+				arrIsbn = grep(pattern,arrSrc);
+				isbnLast = arrIsbn.pop();
+    	   
+				for (var i in arrIsbn) {
+					query += arrIsbn[i] + "/nr ELLER ";
+				}
+				query += isbnLast + "/nr)";
+    	   
+				$('textarea[name="src"]').val(query);
+    	   
+				return false;
+			});
+		});
+	}());     
+    </script>
+  </body>
+</html>
