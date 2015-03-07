@@ -40,14 +40,13 @@
       -->
       <p>Välj fil där bevakade titlar finns listade.</p>
       <input type="file" id="file" name="monitoredTitles" />
-      <output id="output"></output>
+	  <output id="output"></output>
     </section>
     <section>
       <h2>3. Resultat</h2>
       <ul id="resultList"></ul>
     </section>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script src="js/moxie.js"></script>
     <script>
      /**
       *
@@ -171,61 +170,9 @@
 		return false;
 	});
        
-		//$('#file').change(handleFileSelect);
+		$('#file').change(handleFileSelect);
        
 	}());
     </script>
-	<script>
-	// mOxie
-	var fileInput = new mOxie.FileInput({
-		browse_button: 'file'
-	});
-
-	function handleMoxieSelect(e) {
-		console.info(e);
-
-		var f = e.target.files[0],
-			reader = new mOxie.FileReader();
-
-		try {
-			if ( f.type === "text/plain") {
-
-				reader.onload = (function(theFile) {
-					return function(e) {
-
-						var result;
-
-						// comparison.newsletter är redan definierad
-						comparison.monitor = e.target.result.replace(/\r\n/g, '\n');
-						result = comparison.getResult();
-	     
-						$('#resultList').html(''); // nollställ innan resultatet skrivs ut
-					
-						// Om sista raden är tom blir det fel
-						// Testa det på något sätt?
-						for (var i=0; i<result.length; i++) {
-							$('#resultList').append('<li>'+result[i]+'</li>');
-						}
-	     
-					};
-				})(f);
-
-			}
-			else {
-				throw "Måste vara en textfil";
-			}
-		}
-		catch (err) {
-			console.log(err);
-		}
-
-		reader.readAsText(f);
-
-	};
-
-	fileInput.onchange = handleMoxieSelect;
-
-	fileInput.init();
-	</script>
   </body>
 </html>
