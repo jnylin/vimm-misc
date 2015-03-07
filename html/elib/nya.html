@@ -141,8 +141,8 @@
 		}
 		else {
 				alert('Det måste vara en txt-fil');
-			}
 		}
+	}
      
 	// Main
 	$(function () {
@@ -182,20 +182,45 @@
 	});
 
 	function handleMoxieSelect(e) {
-		var f = e.target.files[0];
+		console.info(e);
 
-		console.info(f);
+		var f = e.target.files[0],
+			reader = new mOxie.FileReader();
 
-		readMoxieFile(f, function(e) {
-				console.info(e.target.result);
-		});
+		try {
+			if ( f.type === "text/plain") {
 
-	};
+				reader.onload = (function(theFile) {
+					return function(e) {
 
-	function readMoxieFile(file, onLoadCallback) {
-		var reader = new mOxie.FileReader();
-		reader.onload = onLoadCallback;
-		reader.readAsText(file);
+						var result;
+
+						// comparison.newsletter är redan definierad
+						comparison.monitor = e.target.result.replace(/\r\n/g, '\n');
+						result = comparison.getResult();
+	     
+						$('#resultList').html(''); // nollställ innan resultatet skrivs ut
+					
+						// Om sista raden är tom blir det fel
+						// Testa det på något sätt?
+						for (var i=0; i<result.length; i++) {
+							$('#resultList').append('<li>'+result[i]+'</li>');
+						}
+	     
+					};
+				})(f);
+
+			}
+			else {
+				throw "Måste vara en textfil";
+			}
+		}
+		catch (err) {
+			console.log(err);
+		}
+
+		reader.readAsText(f);
+
 	};
 
 	fileInput.onchange = handleMoxieSelect;
