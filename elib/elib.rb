@@ -34,7 +34,7 @@ f_monitor.each_line do |whish|
 
 	f_elib.each_line do |elib_record|
 		arr = elib_record.split(";")
-		author = arr[0].to_s
+		author = arr[3].to_s
 		title = arr[1].to_s
 		type = arr[2].to_s
 		title_to_compare = author + ";" + title
