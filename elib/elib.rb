@@ -55,8 +55,8 @@ end
 ### Skriv ut titlarna som HTML
 f_html_new_books = File.open("nya.html","w")
 
-f_html_new_books.puts "<!DOCTYPE html><html><head><title>Nya</title></head><body>"
-f_html_new_books.puts "<h1>Nya &oring;</h1>"
+f_html_new_books.puts "<!DOCTYPE html><html><head><title>Nya e-b&ouml;cker att l&auml;gga in</title></head><body>"
+f_html_new_books.puts "<h1>Nya e-b&ouml;cker att l&auml;gga in</h1>"
 f_html_new_books.puts "<ul>"
 
 new_books.each do |title|
