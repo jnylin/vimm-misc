@@ -59,7 +59,6 @@ f_html_new_books = File.open("nya.html","w")
 f_html_new_books.print "<!DOCTYPE html><html><head><title>Nya e-b&ouml;cker att l&auml;gga in</title></head><body>"
 f_html_new_books.print "<h1>Nya e-b&ouml;cker att l&auml;gga in</h1>"
 f_html_new_books.print "<ul>"
-
 new_books.each do |title|
 	record = title.split(";")
 	f_html_new_books.print "<li>#{record[0]}, #{record[1]} (#{record[2]})</li>"
