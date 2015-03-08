@@ -27,7 +27,6 @@ new_books = Array.new
 # Windows och Excel pratar ISO-8859-1
 f_elib = File.open(elib, "r:ISO-8859-1")
 f_monitor = File.open(monitor, "r:ISO-8859-1")
-f_tmp_monitor = File.open("tmp_" + monitor,"w:ISO-8859-1")
 
 ### Gå igenom bevakade titlar
 f_monitor.each_line do |whish|
@@ -50,26 +49,30 @@ f_monitor.each_line do |whish|
 	f_elib.rewind
 
 end
+
+f_elib.close
 ###
 
 ### Skriv ut titlarna som HTML
 f_html_new_books = File.open("nya.html","w")
 
-f_html_new_books.puts "<!DOCTYPE html><html><head><title>Nya e-b&ouml;cker att l&auml;gga in</title></head><body>"
-f_html_new_books.puts "<h1>Nya e-b&ouml;cker att l&auml;gga in</h1>"
-f_html_new_books.puts "<ul>"
+f_html_new_books.print "<!DOCTYPE html><html><head><title>Nya e-b&ouml;cker att l&auml;gga in</title></head><body>"
+f_html_new_books.print "<h1>Nya e-b&ouml;cker att l&auml;gga in</h1>"
+f_html_new_books.print "<ul>"
 
 new_books.each do |title|
 	record = title.split(";")
-	f_html_new_books.puts "<li>#{record[0]}, #{record[1]} (#{record[2]})</li>"
+	f_html_new_books.print "<li>#{record[0]}, #{record[1]} (#{record[2]})</li>"
 end
-f_html_new_books.puts "</ul></body></html>"
+f_html_new_books.print "</ul></body></html>"
 
 f_html_new_books.close
 ###
 
 ### Ta bort dem från bevakningen
+f_tmp_monitor = File.open("tmp_" + monitor,"w:ISO-8859-1")
 f_monitor.rewind
+
 f_monitor.each_line do |whish|
 	hit = false
 
@@ -90,7 +93,6 @@ end
 FileUtils.mv(f_tmp_monitor,f_monitor)
 ###
 
-# Stäng filerna
+# Stäng öppna filer
 f_monitor.close
 f_tmp_monitor.close
-f_elib.close
