@@ -1,3 +1,5 @@
+Kräver att Ruby är installerat. (Windows-användare hittar Ruby på http://rubyinstaller.org/)
+
 Spara Excel-filen utbudet från Elib som elib.csv med teckenkodningen ISO-8859-1 (Excel väljer alltid den teckenkodningen för CSV-filer)
 
 Bevakade titlar sparas i bevakade.csv (även här används ISO-8859-1 på grund av Excel).
