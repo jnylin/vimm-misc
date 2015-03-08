@@ -22,6 +22,7 @@
 require 'fileutils'
 
 elib, monitor = ARGV
+tmp_monitor = "tmp_" + monitor
 new_books = Array.new
 
 # Windows och Excel pratar ISO-8859-1
@@ -69,7 +70,7 @@ f_html_new_books.close
 ###
 
 ### Ta bort dem från bevakningen
-f_tmp_monitor = File.open("tmp_" + monitor,"w:ISO-8859-1")
+f_tmp_monitor = File.open(tmp_monitor,"w:ISO-8859-1")
 f_monitor.rewind
 
 f_monitor.each_line do |whish|
@@ -89,9 +90,8 @@ f_monitor.each_line do |whish|
 	end
 end
 
-FileUtils.mv(f_tmp_monitor,f_monitor)
-###
-
-# Stäng öppna filer
 f_monitor.close
 f_tmp_monitor.close
+
+FileUtils.mv(tmp_monitor,monitor)
+

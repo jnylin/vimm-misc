@@ -1,0 +1,6 @@
+Spara Excel-filen från Elib som elib.csv med teckenkodningen ISO-8859-1 (Excel väljer alltid den teckenkodningen för CSV-filer)
+
+Bevakade titlar sparas i bevakade.csv (även här används ISO-8859-1 på grund av Excel)
+
+main.sh för Unix-lika system
+main.cmd för Windows
