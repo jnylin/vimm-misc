@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Omvandla Elibs nyhetsbrev till en BOOK-IT-s�kning</title>
+    <title>Omvandla Elibs nyhetsbrev till en BOOK-IT-sökning</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script>
     /*    
@@ -33,15 +33,42 @@
     </script>		
   </head>
   <body>
-    <h1>Omvandla "borttagna titlar" fr�n Elibs nyhetsbrev till en BOOK-IT-s�kning</h1>
-    <ol>
-      <li><em>Mängd katalogposter</em>. Gallra katalogposterna.</li> 
-    </ol>
-    <form>
-      <textarea rows="25" cols="60" name="src" id="txtArea">Kopiera in det som st�r under Borttagna titlar i nyhetsbrevet och omvandla.</textarea><br />
-      <button type="submit">Omvandla</button>
-    </form>
+    <h1>Omvandla "borttagna titlar" från Elibs nyhetsbrev till en BOOK-IT-sökning</h1>
+	<section>
+		<ol>
+			<li><em>Mängd katalogposter</em>. Gallra katalogposterna.</li> 
+		</ol>
+		<form>
+			<textarea rows="25" cols="60" name="src" id="txtArea">Kopiera in det som står under Borttagna titlar i nyhetsbrevet och omvandla.</textarea><br />
+			<button type="submit">Omvandla</button>
+		</form>
+	</section>
+	<section class="queries">
+	<h1>BOOK-IT-sökfrågor</h1>
+	<div><p>BOOK-IT har en begränsning på 2000 tecken i sökfrågan. Om det är många titlar som ska gallras skapas därför flera sökfrågor att kopiera till BOOK-IT.</p></div>
+	</section>
     <script type="text/javascript">
+	function IsbnGroup(arrIsbns) {
+		"use strict";
+
+		var query = "dr/mt ",
+			isbnGrp = "(",
+			isbnLast = arrIsbns.pop();
+		
+		for (var i in arrIsbns) {
+			if ( arrIsbns[i] ) {
+				isbnGrp += arrIsbns[i] + "/nr ELLER ";
+			}
+		}
+		
+		isbnGrp += isbnLast + "/nr)";
+		query += isbnGrp ;
+		
+		this.query = query;
+		this.nr_of_isbns = arrIsbns.length;
+
+	}
+	
 	function grep(pattern, input) {
 		"use strict";
 	   
@@ -58,22 +85,20 @@
        
 		return arrRet;
 	}
-     
-    (function() {
+	
+	(function() {
 		"use strict";
        
-		var defaultValue, pattern, txtSrc, arrSrc, arrIsbn, isbnLast, query;
-		pattern = /^978\d{9,10}(X)?$/; /* M�jlig felk�lla: om det st�r ett ISBN inne i den beskrivande texten,
-					 d.v.s. inte i slutet av den beskrivande meningen. 
-					 Har dock inte sett n�got exempel p� det. */
+		var defaultValue, /*pattern,*/ arrSrc, arrIsbn;
+		//pattern = /^978\d{9,10}(X)?$/;
 		arrSrc = [];
 		arrIsbn = [];
        
 		$(function() {
 			defaultValue = $('textarea[name="src"]').val();
-	 
+
 			$('textarea[name="src"]').focus(function() {
-				if (this.value == defaultValue) {
+				if (this.value === defaultValue) {
 					this.value = "";
 				}
 			});
@@ -84,19 +109,42 @@
 			});
 	 
 			$('form').submit(function() {
-				query = "dr/mt (";
-				txtSrc = $('textarea[name="src"]').val();
-				txtSrc = txtSrc.replace(/,/g, "");
-				arrSrc = txtSrc.split(/[;)\s:]+/);
-				arrIsbn = grep(pattern,arrSrc);
-				isbnLast = arrIsbn.pop();
+				var pattern = /^978\d{9,10}(X)?$/, /* Möjlig felkälla: om det står ett ISBN inne i den beskrivande texten,
+					 d.v.s. inte i slutet av den beskrivande meningen. 
+					 Har dock inte sett något exempel på det. */
+					txtSrc = $('textarea[name="src"]').val(),
+					txtSrc = txtSrc.replace(/,/g, ""),
+					arrSrc = txtSrc.split(/[;)\s:]+/),
+					arrIsbn = grep(pattern,arrSrc),
+					arrIsbnGrps = []; /* Array av objectet IsbnGroup från arrIsbn */
     	   
-				for (var i in arrIsbn) {
-					query += arrIsbn[i] + "/nr ELLER ";
+				/* 	BOOK-IT har en begränsning av sökfrågan på 2000 tecken,
+					dela upp sökningarna i ISBN-grupper om 80 stycken */
+				arrIsbnGrps.length = Math.floor(arrIsbn.length/80);
+				if ( arrIsbn.length % 80 > 0 ) {
+					arrIsbnGrps.length += 1;
 				}
-				query += isbnLast + "/nr)";
-    	   
-				$('textarea[name="src"]').val(query);
+				
+				console.info("Antal ISBN: " + arrIsbn.length);
+				console.info("Antal grupper: " + arrIsbnGrps.length);				
+				
+				for (var i = 0; i < arrIsbnGrps.length; i++) {
+					var startPos = i * 80,
+						endPos = startPos + 80; 
+					
+					arrIsbnGrps[i] = new IsbnGroup(arrIsbn.slice(startPos,endPos));
+				}
+
+				/* Töm sektionen med sökfrågor och lägg dit nya */
+				$('.queries > div').empty();		
+				
+				for (var j in arrIsbnGrps) {
+					if ( arrIsbnGrps ) {
+						console.info("Sökfrågans längd: " + arrIsbnGrps[j].query.length);
+						var nr = Number(j)+1;				
+						$('.queries > div').append('<div><h2>Sökfråga ' + nr + '</h2><p>' + arrIsbnGrps[j].query + '</p></div>');
+					}
+				}
     	   
 				return false;
 			});
