@@ -19,7 +19,33 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+require 'csv'
 require 'fileutils'
+
+class Ebook
+	def initialize(options = {})
+		@author = options[:author]
+		@title = options[:title]
+		@type = options[:type] || nil
+	end
+
+	def to_compare
+		"#{@author}".strip + ";" + "#{@title}".strip
+	end
+
+	def get_author
+		@author
+	end
+
+	def get_title
+		@title
+	end
+
+	def get_type
+		@type
+	end
+	
+end
 
 elib, monitor = ARGV
 tmp_monitor = "tmp_" + monitor
@@ -29,25 +55,28 @@ new_books = Array.new
 f_elib = File.open(elib, "r:ISO-8859-1")
 f_monitor = File.open(monitor, "r:ISO-8859-1")
 
-### Gå igenom bevakade titlar
-f_monitor.each_line do |whish|
-	whish_to_compare = whish.strip[/^.+[^;;$]/] #Cleeves, Ann;Dött vatten;;
+csv_watched = CSV.new(f_monitor,{:col_sep=>";"})
+csv_elib = CSV.new(f_elib,{:headers=>:first_row,:col_sep=>";"})
 
-	f_elib.each_line do |elib_record|
-		arr = elib_record.split(";")
-		author = arr[3].to_s
-		title = arr[1].to_s
-		type = arr[2].to_s
-		title_to_compare = author + ";" + title
-		title_to_compare.strip!
-		
-		if whish_to_compare == title_to_compare
-			new_books.push(title_to_compare + ";" + type)
+
+### Main
+
+### Gå igenom bevakade titlar
+csv_watched.each do |w|
+	watched = Ebook.new(:author=>w[0],:title=>w[1])
+
+	csv_elib.each do |e|
+		elib_record = Ebook.new(:author=>e.field(3),:title=>e.field(1),:type=>e.field(2))
+
+		if watched.to_compare === elib_record.to_compare
+			puts watched.to_compare
+			new_books.push(elib_record)
 			break
 		end
+
 	end
 
-	f_elib.rewind
+	csv_elib.rewind
 
 end
 
@@ -60,9 +89,8 @@ f_html_new_books = File.open("nya.html","w")
 f_html_new_books.print "<!DOCTYPE html><html><head><title>Nya e-b&ouml;cker att l&auml;gga in</title></head><body>"
 f_html_new_books.print "<h1>Nya e-b&ouml;cker att l&auml;gga in</h1>"
 f_html_new_books.print "<ul>"
-new_books.each do |title|
-	record = title.split(";")
-	f_html_new_books.print "<li>#{record[0]}, #{record[1]} (#{record[2]})</li>"
+new_books.each do |b|
+	f_html_new_books.print "<li>#{b.get_author}, #{b.get_title} (#{b.get_type})</li>"
 end
 f_html_new_books.print "</ul></body></html>"
 
@@ -71,30 +99,28 @@ f_html_new_books.close
 
 ### Ta bort dem från bevakningen
 f_tmp_monitor = File.open(tmp_monitor,"w:ISO-8859-1")
-f_monitor.rewind
+csv_watched.rewind
 
-f_monitor.each_line do |whish|
+csv_watched.each do |w|
+	watched = Ebook.new(:author=>w[0],:title=>w[1])
 	hit = false
 
-	new_books.each do |title|
-		record = title.split(";")
-		new_book = "#{record[0]};#{record[1]}".strip
-		
-		if whish.strip[/^.+[^;;$]/] == new_book
+	new_books.each do |b|
+
+		if watched.to_compare == b.to_compare
 			hit = true
 		end
 
 	end
-
+	
 	if hit == false
-		f_tmp_monitor.puts whish
+		f_tmp_monitor.puts watched.to_compare
 	end
 end
 
 f_monitor.close
 f_tmp_monitor.close
 
-#FileUtils.rm(monitor)
 FileUtils.mv(tmp_monitor,monitor)
 
 
