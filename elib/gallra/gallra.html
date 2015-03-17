@@ -2,7 +2,27 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-with, initial-scale=1" />
     <title>Omvandla Elibs nyhetsbrev till en BOOK-IT-sökning</title>
+	<style>
+		textarea { max-width: 95%; }
+	</style>
+  </head>
+  <body>
+    <h1>Omvandla "borttagna titlar" från Elibs nyhetsbrev till en BOOK-IT-sökning</h1>
+	<section>
+		<ol>
+			<li><em>Mängd katalogposter</em>. Gallra katalogposterna.</li> 
+		</ol>
+		<form>
+			<textarea rows="25" cols="60" name="src" id="txtArea">Kopiera in det som står under Borttagna titlar i nyhetsbrevet och omvandla.</textarea><br />
+			<button type="submit">Omvandla</button>
+		</form>
+	</section>
+	<section class="queries">
+	<h1>BOOK-IT-sökfrågor</h1>
+	<div><p>BOOK-IT har en begränsning på 2000 tecken i sökfrågan. Om det är många titlar som ska gallras skapas därför flera sökfrågor att kopiera till BOOK-IT.</p></div>
+	</section>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script>
     /*    
@@ -31,22 +51,6 @@
     for the JavaScript code in this page.
     */
     </script>		
-  </head>
-  <body>
-    <h1>Omvandla "borttagna titlar" från Elibs nyhetsbrev till en BOOK-IT-sökning</h1>
-	<section>
-		<ol>
-			<li><em>Mängd katalogposter</em>. Gallra katalogposterna.</li> 
-		</ol>
-		<form>
-			<textarea rows="25" cols="60" name="src" id="txtArea">Kopiera in det som står under Borttagna titlar i nyhetsbrevet och omvandla.</textarea><br />
-			<button type="submit">Omvandla</button>
-		</form>
-	</section>
-	<section class="queries">
-	<h1>BOOK-IT-sökfrågor</h1>
-	<div><p>BOOK-IT har en begränsning på 2000 tecken i sökfrågan. Om det är många titlar som ska gallras skapas därför flera sökfrågor att kopiera till BOOK-IT.</p></div>
-	</section>
     <script type="text/javascript">
 	function IsbnGroup(arrIsbns) {
 		"use strict";
