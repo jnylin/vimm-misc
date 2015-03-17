@@ -31,7 +31,7 @@ f_monitor = File.open(monitor, "r:ISO-8859-1")
 
 ### Gå igenom bevakade titlar
 f_monitor.each_line do |whish|
-	whish_to_compare = whish.strip
+	whish_to_compare = whish.strip[/^.+[^;;$]/] #Cleeves, Ann;Dött vatten;;
 
 	f_elib.each_line do |elib_record|
 		arr = elib_record.split(";")
@@ -40,7 +40,7 @@ f_monitor.each_line do |whish|
 		type = arr[2].to_s
 		title_to_compare = author + ";" + title
 		title_to_compare.strip!
-
+		
 		if whish_to_compare == title_to_compare
 			new_books.push(title_to_compare + ";" + type)
 			break
@@ -70,6 +70,7 @@ f_html_new_books.close
 ###
 
 ### Ta bort dem från bevakningen
+puts "Tar bort hittade titlar från bevakningen"
 f_tmp_monitor = File.open(tmp_monitor,"w:ISO-8859-1")
 f_monitor.rewind
 
@@ -79,12 +80,13 @@ f_monitor.each_line do |whish|
 	new_books.each do |title|
 		record = title.split(";")
 		new_book = "#{record[0]};#{record[1]}".strip
-
-		if whish.strip == new_book
+		
+		if whish.strip[/^.+[^;;$]/] == new_book
 			hit = true
 		end
+
 	end
-	
+
 	if hit == false
 		f_tmp_monitor.puts whish
 	end
@@ -93,5 +95,13 @@ end
 f_monitor.close
 f_tmp_monitor.close
 
+#FileUtils.rm(monitor)
 FileUtils.mv(tmp_monitor,monitor)
+
+
+
+
+
+
+
 
