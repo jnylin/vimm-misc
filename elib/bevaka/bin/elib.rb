@@ -117,7 +117,6 @@ end
 f_monitor.close
 f_tmp_monitor.close
 
-#FileUtils.rm(monitor)
 FileUtils.mv("#{path_csv}/#{tmp_monitor}","#{path_csv}/#{monitor}")
 
 
