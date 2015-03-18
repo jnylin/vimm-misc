@@ -5,5 +5,5 @@ Spara Excel-filen utbudet från Elib som elib.csv med teckenkodningen ISO-8859-1
 Bevakade titlar sparas i bevakade.csv (även här används ISO-8859-1 på grund av Excel).
 Författare och titel klistras in direkt från BTJ-listan.
 
-Om Windows: dubbelklicka på main.cmd
-Om Unix-likt system: kör main.sh
+Om Windows: dubbelklicka genvägen
+Om Unix-likt system: gå till bin och kör main.sh
