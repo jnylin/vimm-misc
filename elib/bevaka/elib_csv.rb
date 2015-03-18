@@ -56,7 +56,7 @@ f_elib = File.open(elib, "r:ISO-8859-1")
 f_monitor = File.open(monitor, "r:ISO-8859-1")
 
 csv_watched = CSV.new(f_monitor,{:col_sep=>";"})
-csv_elib = CSV.new(f_elib,{:headers=>:first_row,:col_sep=>";"})
+csv_elib = CSV.new(f_elib,{:col_sep=>";"})
 
 
 ### Main
@@ -66,7 +66,7 @@ csv_watched.each do |w|
 	watched = Ebook.new(:author=>w[0],:title=>w[1])
 
 	csv_elib.each do |e|
-		elib_record = Ebook.new(:author=>e.field(3),:title=>e.field(1),:type=>e.field(2))
+		elib_record = Ebook.new(:author=>e[3],:title=>e[1],:type=>e[2])
 
 		if watched.to_compare === elib_record.to_compare
 			puts watched.to_compare
