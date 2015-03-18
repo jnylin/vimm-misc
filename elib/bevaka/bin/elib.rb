@@ -46,7 +46,6 @@ class Ebook
 	
 end
 
-# Kataloger
 elib, monitor = ARGV
 path_base = File.expand_path("../")
 path_csv = File.expand_path("../csv/")
