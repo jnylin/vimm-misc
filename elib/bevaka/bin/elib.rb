@@ -26,10 +26,16 @@ class Ebook
 		@author = options[:author]
 		@title = options[:title]
 		@type = options[:type] || nil
+		
+		@author = @author.strip
+		@title = @title.strip
+		
+		@author = @author.gsub(/\.+$/, '')
+		@title = @title.gsub(/\.+$/, '')
 	end
 
 	def to_compare
-		"#{@author}".strip + ";" + "#{@title}".strip
+		@author + ";" + @title
 	end
 
 	def get_author
