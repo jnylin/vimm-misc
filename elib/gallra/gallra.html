@@ -54,6 +54,10 @@
     */
     </script>		
     <script type="text/javascript">
+    	if ( ! window.console ) {
+		console = { log: function(){} };
+	}
+
 	function IsbnGroup(arrIsbns) {
 		"use strict";
 
